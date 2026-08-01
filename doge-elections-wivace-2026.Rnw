@@ -21,32 +21,29 @@
 %
 \begin{document}
 %
-\title{Contribution Title}
+\title{Analyzing contested doge elections in the Republic of Venice through social network analysis}
 %
 %\titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
-Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
-Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
+\author{M. Cristina Molinari\inst{1}\orcidID{0000-0002-6380-6795} \and
+JJ Merelo\inst{2}\orcidID{0000-0002-1385-9741}}
 %
-\authorrunning{F. Author et al.}
+\authorrunning{M. Cristina Molinari et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
-\institute{Princeton University, Princeton NJ 08544, USA \and
-Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
-\email{lncs@springer.com}\\
-\url{http://www.springer.com/gp/computer-science/lncs} \and
-ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
-\email{\{abc,lncs\}@uni-heidelberg.de}}
+\institute{Dipartimento di Economia, Università
+    Ca'Foscari Venezia, Venice, Italy
+\email{cmolinar@unive.it} \and
+Department of Computer Engineering, Automatics and Robotics and CITIC, University of Granada, Granada, Spain\\
+\email{jmerelo@ugr.es}}
 %
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-The abstract should briefly summarize the contents of the paper in
-150--250 words.
+
 
 \keywords{First keyword  \and Second keyword \and Another keyword.}
 \end{abstract}
@@ -60,7 +57,7 @@ During the two century period where the {\em grandi curti} monopolized the acces
 In the election of 1486, which followed the brief nine-month dogeship of Marco Barbarigo, Bernardo Giustinian of the  \emph{longhi} came close to defeating Agostino Barbarigo. Having twice secured twenty-three votes, two short of the required majority, he eventually withdrew in Barbarigo’s favor, reportedly to preserve patrician unity. The \emph{curti} responded by withholding support from \emph{longhi} candidates in the subsequent  yearly elections to the Senate and the Council of Ten (\cite{finlay1980politicsrenaissance}; \cite{raines2006invention1}). %anche Raines pag. 49
 A similar attempt occurred in  1521, when Giorgio Corner sought to break the \emph{curti}'s hold on the dogeship. Despite his wealth and initially favorable sortition---as several electors were drawn from very small houses not aligned with either candidate---he never secured more than fifteen votes, and Antonio Grimani prevailed. As in the 1486 elections, retaliation against the \emph{longhi} followed and an elector who had backed the \emph{curti} in the final college was rewarded with a procuratorship \cite{finlay1980politicsrenaissance}.% ci sarebbe anche 1578 Da ponte. Famiglia nobile alla serrata poi cancellata e poi reinserita nel 1406 (negroponte). Molto dotto. Eletto con 27 voti, dopo con 45 scrutini contro Tiepolo e Soranzo (lungi) e Gritti (curti). Da Mosto p. 370 Vedi anche Raines invention 287-88.
 
-<<casenuove.giustinian, echo=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE>>=
+<<casenuove.giustinian, echo=F, warning=F, message=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE>>=
 noble_marriages <- read.csv("data/noble-marriages-year.csv", stringsAsFactors = FALSE)  # Marriage data
 family_labels <- read.csv("data/family-labels-accession.csv", stringsAsFactors = FALSE) # Family labels
 
@@ -198,6 +195,13 @@ closeness_1521_results <- two_family_analysis(1521,"Grimani","Corner")
 The situation in 1521, when there was a close call between the Grimani and Corner families, was slightly different. The social graph is represented in Figure \ref{fig:casenuove.corner}, showing that they have a very similar position. Table \ref{tab:casenuove.corner} shows that the Corner family, belonging to the {\em longhi}, had more first-degree connections with either "faction". However, closeness was \Sexpr{closeness_1521_results[1]} for the Grimani family, \Sexpr{closeness_1521_results[2]} for the Corner. This slight advantage in a closeness-dominated network very probably contributed to the eventual election of Antonio Grimani. There is another factor, however, that has proved to be important: Antonio Grimani was 86 at the moment of the election, and in fact he died less than two years later. The Venetian system was designed to favor doges that did not take too much time in office \cite{merelo2023sa,smith2021long}. these two factors put together probably decided the election.
 
 %
+\begin{credits}
+\subsubsection{\ackname} This work is supported by the Ministerio espa\~{n}ol de Econom\'{\i}a y
+Competitividad (Spanish Ministry of Competitivity and Economy) under project PID2023-147409NB-C21.
+Source for this paper can be obtained from \url{https://github.com/JJ/doge-elections-wivace}.
+
+\end{credits}
+
 \bibliographystyle{splncs04}
 \bibliography{case-nuove,ours,patrician}
 
