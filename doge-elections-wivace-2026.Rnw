@@ -1,0 +1,204 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+%\usepackage{color}
+%\renewcommand\UrlFont{\color{blue}\rmfamily}
+%\urlstyle{rm}
+%
+\begin{document}
+%
+\title{Contribution Title}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
+Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
+Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
+%
+\authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Princeton University, Princeton NJ 08544, USA \and
+Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
+\email{lncs@springer.com}\\
+\url{http://www.springer.com/gp/computer-science/lncs} \and
+ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+\email{\{abc,lncs\}@uni-heidelberg.de}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+The abstract should briefly summarize the contents of the paper in
+150--250 words.
+
+\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+%
+%
+%
+
+
+During the two century period where the {\em grandi curti} monopolized the access to the office of doge, there were several close calls where {\em longhi} families almost managed to overturn their domination.
+
+In the election of 1486, which followed the brief nine-month dogeship of Marco Barbarigo, Bernardo Giustinian of the  \emph{longhi} came close to defeating Agostino Barbarigo. Having twice secured twenty-three votes, two short of the required majority, he eventually withdrew in Barbarigo’s favor, reportedly to preserve patrician unity. The \emph{curti} responded by withholding support from \emph{longhi} candidates in the subsequent  yearly elections to the Senate and the Council of Ten (\cite{finlay1980politicsrenaissance}; \cite{raines2006invention1}). %anche Raines pag. 49
+A similar attempt occurred in  1521, when Giorgio Corner sought to break the \emph{curti}'s hold on the dogeship. Despite his wealth and initially favorable sortition---as several electors were drawn from very small houses not aligned with either candidate---he never secured more than fifteen votes, and Antonio Grimani prevailed. As in the 1486 elections, retaliation against the \emph{longhi} followed and an elector who had backed the \emph{curti} in the final college was rewarded with a procuratorship \cite{finlay1980politicsrenaissance}.% ci sarebbe anche 1578 Da ponte. Famiglia nobile alla serrata poi cancellata e poi reinserita nel 1406 (negroponte). Molto dotto. Eletto con 27 voti, dopo con 45 scrutini contro Tiepolo e Soranzo (lungi) e Gritti (curti). Da Mosto p. 370 Vedi anche Raines invention 287-88.
+
+<<casenuove.giustinian, echo=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE>>=
+noble_marriages <- read.csv("data/noble-marriages-year.csv", stringsAsFactors = FALSE)  # Marriage data
+family_labels <- read.csv("data/family-labels-accession.csv", stringsAsFactors = FALSE) # Family labels
+
+longhi <- family_labels[ family_labels$Group == "Lunghi", ]$Family
+ducali <- family_labels[ family_labels$Ducale == 1,]$Family
+
+curti_congiurati <- ducali[ !(ducali %in% c("Steno", "Ponte", "Cicogna")) ]
+DEPTH_IN_YEARS <- 75
+
+library(dplyr)
+library(igraph)
+library(knitr)
+
+two_family_analysis <- function( year, casata_1, casata_2) {
+
+  giustinian_marriage_data <-  noble_marriages %>%
+    filter(year <= year & year >= year-DEPTH_IN_YEARS)
+
+  marriage_graph <- graph_from_data_frame(
+    giustinian_marriage_data,
+    directed = FALSE,
+    vertices = unique(c(giustinian_marriage_data$husband_familyname_std, giustinian_marriage_data$wife_familyname_std))
+  )
+
+  E(marriage_graph)$weight <- 1
+  marriage_graph <- simplify(marriage_graph, edge.attr.comb = "sum")
+
+  V(marriage_graph)$Faction <- ifelse(V(marriage_graph)$name %in% longhi, "Longhi", ifelse(V(marriage_graph)$name %in% curti_congiurati, "Grandi Curti", "Curti"))
+
+  V(marriage_graph)$color <- ifelse(V(marriage_graph)$Faction == "Longhi",
+                                    "gold",
+                                    ifelse(V(marriage_graph)$Faction=="Grandi Curti","red","darkgray"))
+
+  closeness_scores <- closeness(marriage_graph, normalized=T)
+  V(marriage_graph)$closeness <- closeness_scores[V(marriage_graph)$name]
+
+  casata_1_closeness <- closeness_scores[casata_1]
+  casata_2_closeness <- closeness_scores[casata_2]
+
+  closeness_df <- data.frame(
+    family    = V(marriage_graph)$name,
+    closeness = V(marriage_graph)$closeness
+  )
+
+  closeness_df_sorted <- closeness_df[order(closeness_df$closeness, decreasing = TRUE), ]
+  rownames(closeness_df_sorted) <- NULL  # tidy up row numbers
+
+  V(marriage_graph)$label <- ifelse( V(marriage_graph)$name %in% c(casata_1, casata_2),
+                                     V(marriage_graph)$name,
+                                     NA
+  )
+
+  core_num <- coreness(marriage_graph)
+  marriage_graph <- induced_subgraph(marriage_graph, which(core_num > 6))
+
+  # Keep only the strongest ties
+  w_thresh <- quantile(E(marriage_graph)$weight, 0.6)
+
+  marriage_graph <- subgraph.edges(
+    marriage_graph,
+    which(E(marriage_graph)$weight >= w_thresh),
+    delete.vertices = FALSE
+  )
+
+  # Drop isolated AND degree-1 nodes (leaves) after the edge filter
+  marriage_graph <- induced_subgraph(marriage_graph, which(degree(marriage_graph) > 1))
+
+  highlight <- V(marriage_graph)$name %in% c(casata_1, casata_2)
+
+  ego_edges <- unlist(lapply(V(marriage_graph)[highlight], function(v) incident(marriage_graph, v)))
+  edge_col <- rep(adjustcolor("grey70", alpha.f = 0.15), ecount(marriage_graph))
+  edge_col[ego_edges] <- adjustcolor("steelblue", alpha.f = 0.8)
+  edge_wid <- rep(0.5, ecount(marriage_graph))
+  edge_wid[ego_edges] <- E(marriage_graph)$weight[ego_edges] * 1.2
+
+  # Transparent node fill; solid frame so nodes still read clearly when overlapping
+  vertex_fill  <- adjustcolor(V(marriage_graph)$color, alpha.f = 0.55)
+  V(marriage_graph)$label       <- ifelse(highlight, V(marriage_graph)$name, NA)
+  V(marriage_graph)$frame.color <- ifelse(highlight, "black", adjustcolor("grey40", alpha.f = 0.6))
+  V(marriage_graph)$size2       <- V(marriage_graph)$closeness * 10
+  label_pos <- ifelse(V(marriage_graph)$name == casata_2, 1, 3)
+
+  layout <- layout_with_fr(marriage_graph, niter = 5000)
+
+  par(mar = c(0, 0, 0, 0))                 # kill the default plot margins
+  layout <- norm_coords(layout, xmin = -1, xmax = 1, ymin = -1, ymax = 1)
+
+  plot(marriage_graph,
+     layout = layout,
+     vertex.size = V(marriage_graph)$size2,
+     vertex.label = V(marriage_graph)$label,
+     vertex.label.color = "black",
+     vertex.label.font = 2,
+     vertex.label.cex = 1.1,
+     vertex.label.dist = 1,
+     vertex.label.pos = label_pos,
+     vertex.color = vertex_fill,
+     vertex.frame.color = V(marriage_graph)$frame.color,
+     edge.color = edge_col,
+     edge.width = edge_wid,
+     edge.curved = 0.1
+  )
+
+  faction_levels <- c("Longhi", "Grandi Curti", "Curti")
+
+  barbarigo_neighbors <- neighbors(marriage_graph, V(marriage_graph)[name == casata_1])
+  giustinian_neighbors <- neighbors(marriage_graph, V(marriage_graph)[name == casata_2])
+
+  faction_summary <- data.frame(
+    Faction    = faction_levels,
+    Barbarigo  = as.integer(table(factor(barbarigo_neighbors$Faction, levels = faction_levels))),
+    Giustinian = as.integer(table(factor(giustinian_neighbors$Faction, levels = faction_levels)))
+  )
+  colnames(faction_summary)[2:3] <- c(casata_1, casata_2)
+
+  writeLines(kable(faction_summary, format = "latex", caption="Table of connections from the candidate families to the rest of types of the network"))
+  return(c(casata_1_closeness, casata_2_closeness))
+}
+
+closeness_1486_results <- two_family_analysis(1486,"Barbarigo","Giustinian")
+barbarigo_closeness <- closeness_1486_results[1]
+giustinian_closeness <- closeness_1486_results[2]
+@
+
+We have plotted the main nodes of the network (by degree) in Figure \ref{fig:casenuove.giustinian}, highlighting the connections between the two candidates and the rest of the network. Node size is proportional to closeness. Besides the fact that the two nodes are very close in network terms to each other, what is apparent from the graph is that while the Giustinian (longhi) are closest to other of the same {\em longhi} faction, the Barbarigo have a more diverse (network) neighborhood. In fact, we represent the number of first-degree connection of each family in Table \ref{tab:casenuove.giustinian}. Looking at the whole network, the {\em casata} Barbarigo closeness is \Sexpr{barbarigo_closeness}, slightly lower than
+\Sexpr{giustinian_closeness}
+for the Giustinian family, which gave them a chance at challenging {\em grandi curti}'s domination, but not enough to actually beat them; besides, we should take into account that, although both were connected in the first degree to the two factions, the Barbarigo not only had more {\em curti} in their neighborhood, but also a good amount of families from the {\em longhi} "faction"; as a matter of fact, they had more connections to families of the {\em other} faction than to its own; the situation is inverted for the Giustinian.
+
+This close call holds two different lessons: first, there was no strict factionalism in the sense of factions totally separated in different communities, without any kind of inter-marriage; factions are also not directly connected with each other, needing in many cases go through families of the other "faction" to reach other member. Second, in a closeness-dominated network with very tight connections and prominent families having a very similar closeness, a small advantage can give you a chance to compete, but other factors related to the ability to form a grand coalition through first-degree connections may matter more in the end.
+
+<<casenuove.corner, results="asis", echo=F, fig.cap="Social graph at the moment of the Corner election, 1521", fig.pos="h!tb">>=
+closeness_1521_results <- two_family_analysis(1521,"Grimani","Corner")
+@
+
+The situation in 1521, when there was a close call between the Grimani and Corner families, was slightly different. The social graph is represented in Figure \ref{fig:casenuove.corner}, showing that they have a very similar position. Table \ref{tab:casenuove.corner} shows that the Corner family, belonging to the {\em longhi}, had more first-degree connections with either "faction". However, closeness was \Sexpr{closeness_1521_results[1]} for the Grimani family, \Sexpr{closeness_1521_results[2]} for the Corner. This slight advantage in a closeness-dominated network very probably contributed to the eventual election of Antonio Grimani. There is another factor, however, that has proved to be important: Antonio Grimani was 86 at the moment of the election, and in fact he died less than two years later. The Venetian system was designed to favor doges that did not take too much time in office \cite{merelo2023sa,smith2021long}. these two factors put together probably decided the election.
+
+%
+\bibliographystyle{splncs04}
+\bibliography{case-nuove,ours,patrician}
+
+\end{document}
