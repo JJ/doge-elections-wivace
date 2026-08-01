@@ -45,17 +45,20 @@ Department of Computer Engineering, Automatics and Robotics and CITIC, Universit
 \begin{abstract}
 
 
-\keywords{First keyword  \and Second keyword \and Another keyword.}
+\keywords{Social Network Analysis  \and Historical Networks \and Republic of Venice.}
 \end{abstract}
 %
 %
 %
+The Republic of Venice was a historical polity with origins in the Middle Ages, which lasted, using the same government form, until the end of the 18th century, using the same form of government, a president of the republic (called {\em doge}) elected for life by a complex electoral college composed of members of the patrician class \cite{molinari2020republic}. This system of election, as well as the relatively closed nature of the noble class, as well as the existence of historical registers, has left the historical dynamics of the republic open for study from a social network perspective. The division of the patrician class into different groups, the so-called {\em longhi} or "old" families and the {\em curti} (meaning "short") or "new" families, offers also interesting community dynamics to be studied. 
+
+Among them, the fact that a small and prominent fraction of the {\em curti} families monopolized the presidency of the Republic from the 15th century to the 18th century \cite{finlay1980politicsrenaissance}.
+
 
 
 During the two century period where the {\em grandi curti} monopolized the access to the office of doge, there were several close calls where {\em longhi} families almost managed to overturn their domination.
 
 In the election of 1486, which followed the brief nine-month dogeship of Marco Barbarigo, Bernardo Giustinian of the  \emph{longhi} came close to defeating Agostino Barbarigo. Having twice secured twenty-three votes, two short of the required majority, he eventually withdrew in Barbarigo’s favor, reportedly to preserve patrician unity. The \emph{curti} responded by withholding support from \emph{longhi} candidates in the subsequent  yearly elections to the Senate and the Council of Ten (\cite{finlay1980politicsrenaissance}; \cite{raines2006invention1}). %anche Raines pag. 49
-A similar attempt occurred in  1521, when Giorgio Corner sought to break the \emph{curti}'s hold on the dogeship. Despite his wealth and initially favorable sortition---as several electors were drawn from very small houses not aligned with either candidate---he never secured more than fifteen votes, and Antonio Grimani prevailed. As in the 1486 elections, retaliation against the \emph{longhi} followed and an elector who had backed the \emph{curti} in the final college was rewarded with a procuratorship \cite{finlay1980politicsrenaissance}.% ci sarebbe anche 1578 Da ponte. Famiglia nobile alla serrata poi cancellata e poi reinserita nel 1406 (negroponte). Molto dotto. Eletto con 27 voti, dopo con 45 scrutini contro Tiepolo e Soranzo (lungi) e Gritti (curti). Da Mosto p. 370 Vedi anche Raines invention 287-88.
 
 <<casenuove.giustinian, echo=F, warning=F, message=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE>>=
 noble_marriages <- read.csv("data/noble-marriages-year.csv", stringsAsFactors = FALSE)  # Marriage data
@@ -187,6 +190,9 @@ We have plotted the main nodes of the network (by degree) in Figure \ref{fig:cas
 for the Giustinian family, which gave them a chance at challenging {\em grandi curti}'s domination, but not enough to actually beat them; besides, we should take into account that, although both were connected in the first degree to the two factions, the Barbarigo not only had more {\em curti} in their neighborhood, but also a good amount of families from the {\em longhi} "faction"; as a matter of fact, they had more connections to families of the {\em other} faction than to its own; the situation is inverted for the Giustinian.
 
 This close call holds two different lessons: first, there was no strict factionalism in the sense of factions totally separated in different communities, without any kind of inter-marriage; factions are also not directly connected with each other, needing in many cases go through families of the other "faction" to reach other member. Second, in a closeness-dominated network with very tight connections and prominent families having a very similar closeness, a small advantage can give you a chance to compete, but other factors related to the ability to form a grand coalition through first-degree connections may matter more in the end.
+
+A similar attempt occurred in  1521, when Giorgio Corner sought to break the \emph{curti}'s hold on the dogeship. Despite his wealth and initially favorable sortition---as several electors were drawn from very small houses not aligned with either candidate---he never secured more than fifteen votes, and Antonio Grimani prevailed. As in the 1486 elections, retaliation against the \emph{longhi} followed and an elector who had backed the \emph{curti} in the final college was rewarded with a procuratorship \cite{finlay1980politicsrenaissance}.% ci sarebbe anche 1578 Da ponte. Famiglia nobile alla serrata poi cancellata e poi reinserita nel 1406 (negroponte). Molto dotto. Eletto con 27 voti, dopo con 45 scrutini contro Tiepolo e Soranzo (lungi) e Gritti (curti). Da Mosto p. 370 Vedi anche Raines invention 287-88.
+
 
 <<casenuove.corner, results="asis", echo=F, fig.cap="Social graph at the moment of the Corner election, 1521", fig.pos="h!tb">>=
 closeness_1521_results <- two_family_analysis(1521,"Grimani","Corner")
