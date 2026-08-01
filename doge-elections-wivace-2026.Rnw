@@ -50,30 +50,19 @@ Department of Computer Engineering, Automatics and Robotics and CITIC, Universit
 %
 %
 %
-The Republic of Venice was a historical polity with origins in the Middle Ages, which lasted, using the same government form, until the end of the 18th century, using the same form of government, a president of the republic (called {\em doge}) elected for life by a complex electoral college composed of members of the patrician class \cite{molinari2020republic}. This system of election, as well as the relatively closed nature of the noble class, as well as the existence of historical registers, has left the historical dynamics of the republic open for study from a social network perspective. The division of the patrician class into different groups, the so-called {\em longhi} or "old" families and the {\em curti} (meaning "short") or "new" families, offers also interesting community dynamics to be studied. 
+The Republic of Venice was a historical polity with origins in the Middle Ages, which lasted, using the same government form, until the end of the 18th century, using the same form of government, a president of the republic (called {\em doge}) elected for life by a complex electoral college composed of members of the patrician class \cite{molinari2020republic}. This system of election, as well as the relatively closed nature of the noble class, as well as the existence of historical registers, has left the historical dynamics of the republic open for study from a social network perspective. The division of the patrician class into different groups, the so-called {\em longhi} or "old" families and the {\em curti} (meaning "short") or "new" families, offers also interesting community dynamics to be studied \cite{pullan1999three}. 
 
-Among them, the fact that a small and prominent fraction of the {\em curti} families monopolized the presidency of the Republic from the 15th century to the 18th century \cite{finlay1980politicsrenaissance}.
-
-
-
-During the two century period where the {\em grandi curti} monopolized the access to the office of doge, there were several close calls where {\em longhi} families almost managed to overturn their domination.
-
-In the election of 1486, which followed the brief nine-month dogeship of Marco Barbarigo, Bernardo Giustinian of the  \emph{longhi} came close to defeating Agostino Barbarigo. Having twice secured twenty-three votes, two short of the required majority, he eventually withdrew in Barbarigo’s favor, reportedly to preserve patrician unity. The \emph{curti} responded by withholding support from \emph{longhi} candidates in the subsequent  yearly elections to the Senate and the Council of Ten (\cite{finlay1980politicsrenaissance}; \cite{raines2006invention1}). %anche Raines pag. 49
-
-<<casenuove.giustinian, echo=F, warning=F, message=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE>>=
+<<wivace26.setup, echo=F, warning=F, message=F>>=
 noble_marriages <- read.csv("data/noble-marriages-year.csv", stringsAsFactors = FALSE)  # Marriage data
 family_labels <- read.csv("data/family-labels-accession.csv", stringsAsFactors = FALSE) # Family labels
 
 longhi <- family_labels[ family_labels$Group == "Lunghi", ]$Family
 ducali <- family_labels[ family_labels$Ducale == 1,]$Family
 
-curti_congiurati <- ducali[ !(ducali %in% c("Steno", "Ponte", "Cicogna")) ]
+grandi_curti <- ducali[ !(ducali %in% c("Steno", "Ponte", "Cicogna")) ]
 DEPTH_IN_YEARS <- 75
 
-library(dplyr)
-library(igraph)
-library(knitr)
-
+# Function definition
 two_family_analysis <- function( year, casata_1, casata_2) {
 
   giustinian_marriage_data <-  noble_marriages %>%
@@ -88,7 +77,7 @@ two_family_analysis <- function( year, casata_1, casata_2) {
   E(marriage_graph)$weight <- 1
   marriage_graph <- simplify(marriage_graph, edge.attr.comb = "sum")
 
-  V(marriage_graph)$Faction <- ifelse(V(marriage_graph)$name %in% longhi, "Longhi", ifelse(V(marriage_graph)$name %in% curti_congiurati, "Grandi Curti", "Curti"))
+  V(marriage_graph)$Faction <- ifelse(V(marriage_graph)$name %in% longhi, "Longhi", ifelse(V(marriage_graph)$name %in% grandi_curti, "Grandi Curti", "Curti"))
 
   V(marriage_graph)$color <- ifelse(V(marriage_graph)$Faction == "Longhi",
                                     "gold",
@@ -179,6 +168,21 @@ two_family_analysis <- function( year, casata_1, casata_2) {
   writeLines(kable(faction_summary, format = "latex", caption="Table of connections from the candidate families to the rest of types of the network"))
   return(c(casata_1_closeness, casata_2_closeness))
 }
+
+@
+
+
+Among them, the fact that a small and prominent fraction of the {\em curti} families monopolized the presidency of the Republic from the 15th century to the 18th century \cite{finlay1980politicsrenaissance} These families were eventually called {\em ducali} precisely for that reason. Starting with the election of Francesco Foscari in 1423, and until the election of Marcantonio Memmo in 1612, all doges were taken from a small pool of 16 families \Sexpr{paste(grandi_curti, collapse=", ")}.
+
+During the two century period where the {\em grandi curti} monopolized the access to the office of doge, there were several close calls where {\em longhi} families almost managed to overturn their domination.
+
+In the election of 1486, which followed the brief nine-month dogeship of Marco Barbarigo, Bernardo Giustinian of the  \emph{longhi} came close to defeating Agostino Barbarigo. Having twice secured twenty-three votes, two short of the required majority, he eventually withdrew in Barbarigo’s favor, reportedly to preserve patrician unity. The \emph{curti} responded by withholding support from \emph{longhi} candidates in the subsequent  yearly elections to the Senate and the Council of Ten (\cite{finlay1980politicsrenaissance,raines2006invention1}). %anche Raines pag. 49
+
+<<wivace26.giustinian, echo=F, warning=F, message=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE>>=
+
+library(dplyr)
+library(igraph)
+library(knitr)
 
 closeness_1486_results <- two_family_analysis(1486,"Barbarigo","Giustinian")
 barbarigo_closeness <- closeness_1486_results[1]
