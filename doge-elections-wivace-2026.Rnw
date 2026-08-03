@@ -178,7 +178,7 @@ During the two century period where the {\em grandi curti} monopolized the acces
 
 In the election of 1486, which followed the brief nine-month dogeship of Marco Barbarigo, Bernardo Giustinian of the  \emph{longhi} came close to defeating Agostino Barbarigo. Having twice secured twenty-three votes, two short of the required majority, he eventually withdrew in Barbarigo’s favor, reportedly to preserve patrician unity. The \emph{curti} responded by withholding support from \emph{longhi} candidates in the subsequent  yearly elections to the Senate and the Council of Ten (\cite{finlay1980politicsrenaissance,raines2006invention1}). %anche Raines pag. 49
 
-<<wivace26.giustinian, echo=F, warning=F, message=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE>>=
+<<wivace26.giustinian, echo=F, warning=F, message=F, fig.cap="Social graph in 1486, with node size proportional to closeness, marking the two families that competed for doge; we use the regular colors for factions The black-rimmed nodes mark the two families that are contending in the election.", fig.pos="h!tb", results='asis', warning=FALSE, fig.height=4.5>>=
 
 library(dplyr)
 library(igraph)
